@@ -9,6 +9,10 @@ import '../../../core/constants/app_dimensions.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/router/route_names.dart';
 import '../widgets/rest_timer_overlay.dart';
+import '../widgets/rest_timer_settings.dart';
+import '../widgets/tempo_selector.dart';
+import '../widgets/workout_notes.dart';
+import '../widgets/exercise_demo.dart';
 
 /// Active workout screen for real-time exercise logging.
 class ActiveWorkoutScreen extends ConsumerStatefulWidget {
@@ -38,6 +42,12 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen>
   Timer? _durationTimer;
   String _workoutDuration = '00:00';
 
+  // New feature state
+  RestTimerSettings _restTimerSettings = const RestTimerSettings();
+  RepTempo _currentTempo = RepTempo.standard;
+  final List<WorkoutNote> _workoutNotes = [];
+  String? _workoutGeneralNote;
+
   // Mock exercises
   final _exercises = [
     {
@@ -47,6 +57,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen>
       'restSeconds': 90,
       'muscle': 'Chest',
       'icon': Icons.fitness_center,
+      'type': ExerciseType.compound,
     },
     {
       'name': 'Incline Dumbbell Press',
@@ -55,6 +66,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen>
       'restSeconds': 60,
       'muscle': 'Upper Chest',
       'icon': Icons.fitness_center,
+      'type': ExerciseType.compound,
     },
     {
       'name': 'Shoulder Press',
@@ -63,6 +75,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen>
       'restSeconds': 90,
       'muscle': 'Shoulders',
       'icon': Icons.accessibility_new,
+      'type': ExerciseType.compound,
     },
     {
       'name': 'Lateral Raises',
@@ -71,6 +84,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen>
       'restSeconds': 45,
       'muscle': 'Side Delts',
       'icon': Icons.accessibility_new,
+      'type': ExerciseType.isolation,
     },
     {
       'name': 'Tricep Pushdowns',
@@ -79,6 +93,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen>
       'restSeconds': 45,
       'muscle': 'Triceps',
       'icon': Icons.fitness_center,
+      'type': ExerciseType.isolation,
     },
     {
       'name': 'Overhead Tricep Extension',
@@ -87,6 +102,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen>
       'restSeconds': 60,
       'muscle': 'Triceps',
       'icon': Icons.fitness_center,
+      'type': ExerciseType.isolation,
     },
   ];
 
@@ -135,7 +151,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen>
     super.dispose();
   }
 
-  void _logSet(int reps, double weight) {
+  void _logSet(int reps, double weight, {String? note, RepTempo? tempo}) {
     HapticFeedback.mediumImpact();
     setState(() {
       _loggedSets[_currentExerciseIndex].add({
@@ -143,21 +159,29 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen>
         'reps': reps,
         'weight': weight,
         'timestamp': DateTime.now(),
+        'note': note,
+        'tempo': tempo?.notation,
       });
     });
 
     // Check if all sets are complete
     final targetSets = _exercises[_currentExerciseIndex]['sets'] as int;
+    final exerciseType = _exercises[_currentExerciseIndex]['type'] as ExerciseType;
+
     if (_loggedSets[_currentExerciseIndex].length >= targetSets) {
       // Auto-advance to next exercise after a brief delay
       if (_currentExerciseIndex < _exercises.length - 1) {
-        _restSeconds = _exercises[_currentExerciseIndex]['restSeconds'] as int;
-        _showRestTimer();
+        _restSeconds = _restTimerSettings.getRestTimeForExercise(exerciseType);
+        if (_restTimerSettings.autoStart) {
+          _showRestTimer();
+        }
       }
     } else {
-      // Show rest timer between sets
-      _restSeconds = _exercises[_currentExerciseIndex]['restSeconds'] as int;
-      _showRestTimer();
+      // Show rest timer between sets (auto-start based on settings)
+      _restSeconds = _restTimerSettings.getRestTimeForExercise(exerciseType);
+      if (_restTimerSettings.autoStart) {
+        _showRestTimer();
+      }
     }
   }
 
@@ -185,6 +209,91 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen>
       _isResting = false;
     });
     HapticFeedback.selectionClick();
+  }
+
+  void _showRestTimerSettings() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.75,
+        minChildSize: 0.5,
+        maxChildSize: 0.9,
+        builder: (context, scrollController) => SingleChildScrollView(
+          controller: scrollController,
+          child: RestTimerSettingsSheet(
+            initialSettings: _restTimerSettings,
+            onSettingsChanged: (settings) {
+              setState(() => _restTimerSettings = settings);
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showTempoSelector() async {
+    final result = await TempoSelectorSheet.show(context, _currentTempo);
+    if (result != null) {
+      setState(() => _currentTempo = result);
+    }
+  }
+
+  void _showNotesPanel() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        minChildSize: 0.4,
+        maxChildSize: 0.9,
+        builder: (context, scrollController) => Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(AppDimensions.radiusLg),
+            ),
+          ),
+          child: SingleChildScrollView(
+            controller: scrollController,
+            padding: const EdgeInsets.all(AppDimensions.paddingMd),
+            child: WorkoutNotesPanel(
+              notes: _workoutNotes,
+              onNoteAdded: (note) {
+                setState(() => _workoutNotes.add(note));
+              },
+              onNoteDeleted: (id) {
+                setState(() => _workoutNotes.removeWhere((n) => n.id == id));
+              },
+              onNoteUpdated: (note) {
+                setState(() {
+                  final index = _workoutNotes.indexWhere((n) => n.id == note.id);
+                  if (index != -1) {
+                    _workoutNotes[index] = note;
+                  }
+                });
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showExerciseDemo(String exerciseName) {
+    final demo = ExerciseDemoLibrary.findByName(exerciseName);
+    if (demo != null) {
+      ExerciseDemoSheet.show(context, demo);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('No demo available for $exerciseName'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   void _navigateExercise(int direction) {
@@ -288,7 +397,48 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen>
           ],
         ),
         centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         actions: [
+          // Notes button
+          IconButton(
+            onPressed: _showNotesPanel,
+            icon: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                const Icon(Icons.sticky_note_2_outlined, size: 22),
+                if (_workoutNotes.isNotEmpty)
+                  Positioned(
+                    right: -6,
+                    top: -6,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: AppColors.warning,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(
+                        '${_workoutNotes.length}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            tooltip: 'Workout Notes',
+          ),
+          // Timer settings
+          IconButton(
+            onPressed: _showRestTimerSettings,
+            icon: const Icon(Icons.timer_outlined, size: 22),
+            tooltip: 'Rest Timer Settings',
+          ),
           TextButton.icon(
             onPressed: _finishWorkout,
             icon: const Icon(Icons.flag, size: 18),
@@ -429,16 +579,39 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen>
                     children: [
                       Row(
                         children: [
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Icon(
-                              currentExercise['icon'] as IconData,
-                              color: Colors.white,
-                              size: 28,
+                          GestureDetector(
+                            onTap: () => _showExerciseDemo(currentExercise['name'] as String),
+                            child: Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Stack(
+                                children: [
+                                  Icon(
+                                    currentExercise['icon'] as IconData,
+                                    color: Colors.white,
+                                    size: 28,
+                                  ),
+                                  Positioned(
+                                    right: -4,
+                                    bottom: -4,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(2),
+                                      decoration: const BoxDecoration(
+                                        color: Colors.white,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(
+                                        Icons.play_arrow,
+                                        color: AppColors.primary,
+                                        size: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -464,13 +637,71 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen>
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 12),
+                      // Tempo and quick actions row
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          GestureDetector(
+                            onTap: _showTempoSelector,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.speed, size: 14, color: Colors.white),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Tempo: ${_currentTempo.notation}',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          GestureDetector(
+                            onTap: () => _showExerciseDemo(currentExercise['name'] as String),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                              ),
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.play_circle_outline, size: 14, color: Colors.white),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    'Demo',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           _buildExerciseStat('Sets', '${currentSets.length}/$targetSets'),
                           _buildExerciseStat('Target', '${currentExercise['reps']}'),
-                          _buildExerciseStat('Rest', '${currentExercise['restSeconds']}s'),
+                          _buildExerciseStat('Rest', '${_restTimerSettings.getRestTimeForExercise(currentExercise['type'] as ExerciseType)}s'),
                         ],
                       ),
                     ],

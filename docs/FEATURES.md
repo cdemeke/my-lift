@@ -175,6 +175,77 @@ Features:
 
 ---
 
+### Rest Timer with Auto-start
+**Location:** During active workout
+
+Intelligent rest timer that starts automatically after logging each set:
+- **Auto-start:** Timer begins immediately after completing a set
+- **Customizable rest times by exercise type:**
+  - Compound exercises (Squat, Bench, Deadlift): 2-3 minutes
+  - Isolation exercises (Curls, Extensions): 60-90 seconds
+  - Abs/Core work: 30-45 seconds
+- **Quick presets:** Strength (3-5 min), Hypertrophy (60-90s), Endurance (30-45s)
+- **Time adjustment buttons:** +/- 15s and 30s during rest
+- **Visual countdown:** Large display with progress ring
+- **Haptic feedback:** Vibrates when timer completes
+- **Skip option:** End rest early when ready
+
+**Why it's helpful:** Consistent rest periods optimize training. Auto-start means you never forget to time your rest, and exercise-specific durations ensure optimal recovery for each movement type.
+
+---
+
+### Rep Tempo Tracking
+**Location:** During active workout → Tempo button
+
+Control the speed of each rep phase with tempo notation (Eccentric-Pause-Concentric-Pause):
+- **Standard notation:** 3-1-2-0 means 3s lowering, 1s pause at bottom, 2s lifting, 0s pause at top
+- **Visual phase display:** Shows each phase with color coding
+- **Per-set tracking:** Tempo is logged with each set
+- **Quick presets:**
+  - Standard (2-0-1-0): Normal training tempo
+  - Controlled (3-1-2-0): Focus on mind-muscle connection
+  - Explosive (2-0-1-0): Power development
+  - Slow Eccentric (4-1-1-0): Muscle damage focus
+  - Paused (2-2-1-1): Eliminate momentum
+  - Time Under Tension (4-2-4-2): Maximum hypertrophy
+- **Total time calculator:** Shows seconds per rep
+
+**Why it's helpful:** Tempo training unlocks new stimulus for muscle growth. Tracking tempo ensures you're executing the technique you intended and can progressively overload through time under tension.
+
+---
+
+### Workout Notes
+**Location:** Active workout → Notes icon (top right)
+
+Add notes to your workouts and individual sets:
+- **Workout-level notes:** General observations about the session
+- **Set-level notes:** Quick notes on specific sets (form cues, felt heavy, etc.)
+- **Timestamped entries:** See when each note was added
+- **Edit and delete:** Modify notes anytime during workout
+- **Visual indicators:** Badge shows note count in app bar
+- **Quick add:** Tap to expand note input, type, done
+
+**Why it's helpful:** Notes capture context that numbers can't. "Shoulder felt tight" or "New PR after deload" helps you understand patterns and make better training decisions later.
+
+---
+
+### Exercise Demo Videos
+**Location:** Active workout → Tap exercise icon or "Demo" button
+
+Watch proper form demonstrations for each exercise:
+- **20+ exercises** with video demonstrations
+- **YouTube integration:** High-quality instructional videos
+- **Step-by-step instructions:** Numbered how-to guide
+- **Pro tips:** Expert advice for better execution
+- **Muscles worked:** Primary and secondary muscles listed
+- **Equipment needed:** What you'll need for the exercise
+- **Difficulty rating:** Beginner, Intermediate, Advanced
+- **Searchable library:** Browse all exercises by muscle group
+
+**Why it's helpful:** Perfect form prevents injury and maximizes gains. Having demos available mid-workout means you can check technique without leaving the app or guessing at proper execution.
+
+---
+
 ## Analytics & Reporting
 
 *(Features will be documented as implemented)*
