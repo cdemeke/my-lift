@@ -11,6 +11,8 @@ import '../../presentation/workout/screens/weekly_plan_screen.dart';
 import '../../presentation/workout/screens/workout_detail_screen.dart';
 import '../../presentation/workout/screens/active_workout_screen.dart';
 import '../../presentation/workout/screens/workout_complete_screen.dart';
+import '../../presentation/workout/screens/workout_builder_screen.dart';
+import '../../presentation/workout/screens/workout_templates_screen.dart';
 import '../../presentation/exercises/screens/exercise_library_screen.dart';
 import '../../presentation/exercises/screens/exercise_detail_screen.dart';
 import '../../presentation/coach/screens/coach_chat_screen.dart';
@@ -20,6 +22,12 @@ import '../../presentation/profile/screens/settings_screen.dart';
 import '../../presentation/history/screens/history_screen.dart';
 import '../../presentation/progress/screens/progress_screen.dart';
 import '../../presentation/achievements/screens/achievements_screen.dart';
+import '../../presentation/progress/screens/measurements_screen.dart';
+import '../../presentation/progress/screens/progress_photos_screen.dart';
+import '../../presentation/progress/screens/weight_tracking_screen.dart';
+import '../../presentation/tools/screens/plate_calculator_screen.dart';
+import '../../presentation/tools/screens/one_rm_calculator_screen.dart';
+import '../../presentation/onboarding/screens/onboarding_quiz_screen.dart';
 import 'route_names.dart';
 
 /// Provider for the GoRouter instance.
@@ -63,11 +71,16 @@ class AppRouter {
           builder: (context, state) => const ForgotPasswordScreen(),
         ),
 
-        // Onboarding route
+        // Onboarding routes
         GoRoute(
           path: RoutePaths.onboarding,
           name: RouteNames.onboarding,
           builder: (context, state) => const OnboardingScreen(),
+        ),
+        GoRoute(
+          path: RoutePaths.onboardingQuiz,
+          name: RouteNames.onboardingQuiz,
+          builder: (context, state) => const OnboardingQuizScreen(),
         ),
 
         // Main app with bottom navigation
@@ -132,6 +145,23 @@ class AppRouter {
             return WorkoutCompleteScreen(workoutId: workoutId);
           },
         ),
+        GoRoute(
+          path: RoutePaths.workoutBuilder,
+          name: RouteNames.workoutBuilder,
+          builder: (context, state) => const WorkoutBuilderScreen(),
+        ),
+        GoRoute(
+          path: RoutePaths.workoutBuilderEdit,
+          builder: (context, state) {
+            final workoutId = state.pathParameters['workoutId'];
+            return WorkoutBuilderScreen(workoutId: workoutId);
+          },
+        ),
+        GoRoute(
+          path: RoutePaths.workoutTemplates,
+          name: RouteNames.workoutTemplates,
+          builder: (context, state) => const WorkoutTemplatesScreen(),
+        ),
 
         // Exercise routes
         GoRoute(
@@ -173,6 +203,31 @@ class AppRouter {
           path: RoutePaths.achievements,
           name: RouteNames.achievements,
           builder: (context, state) => const AchievementsScreen(),
+        ),
+        GoRoute(
+          path: RoutePaths.measurements,
+          name: RouteNames.measurements,
+          builder: (context, state) => const MeasurementsScreen(),
+        ),
+        GoRoute(
+          path: RoutePaths.progressPhotos,
+          name: RouteNames.progressPhotos,
+          builder: (context, state) => const ProgressPhotosScreen(),
+        ),
+        GoRoute(
+          path: RoutePaths.weightTracking,
+          name: RouteNames.weightTracking,
+          builder: (context, state) => const WeightTrackingScreen(),
+        ),
+        GoRoute(
+          path: RoutePaths.plateCalculator,
+          name: RouteNames.plateCalculator,
+          builder: (context, state) => const PlateCalculatorScreen(),
+        ),
+        GoRoute(
+          path: RoutePaths.oneRmCalculator,
+          name: RouteNames.oneRmCalculator,
+          builder: (context, state) => const OneRmCalculatorScreen(),
         ),
       ],
 

@@ -10,6 +10,7 @@ class RouteNames {
 
   // Onboarding routes
   static const String onboarding = 'onboarding';
+  static const String onboardingQuiz = 'onboarding-quiz';
   static const String fitnessGoals = 'fitness-goals';
   static const String equipmentSetup = 'equipment-setup';
   static const String gymProfileSetup = 'gym-profile-setup';
@@ -26,6 +27,8 @@ class RouteNames {
   static const String activeWorkout = 'active-workout';
   static const String workoutComplete = 'workout-complete';
   static const String quickLog = 'quick-log';
+  static const String workoutBuilder = 'workout-builder';
+  static const String workoutTemplates = 'workout-templates';
 
   // Exercise routes
   static const String exerciseLibrary = 'exercise-library';
@@ -40,6 +43,13 @@ class RouteNames {
   static const String workoutHistory = 'workout-history';
   static const String historyDetail = 'history-detail';
   static const String achievements = 'achievements';
+  static const String measurements = 'measurements';
+  static const String weightTracking = 'weight-tracking';
+  static const String progressPhotos = 'progress-photos';
+
+  // Tools routes
+  static const String plateCalculator = 'plate-calculator';
+  static const String oneRmCalculator = 'one-rm-calculator';
 }
 
 /// Route path constants.
@@ -54,6 +64,7 @@ class RoutePaths {
 
   // Onboarding paths
   static const String onboarding = '/onboarding';
+  static const String onboardingQuiz = '/onboarding/quiz';
   static const String fitnessGoals = '/onboarding/goals';
   static const String equipmentSetup = '/onboarding/equipment';
   static const String gymProfileSetup = '/onboarding/gym-profile';
@@ -70,6 +81,9 @@ class RoutePaths {
   static const String activeWorkout = '/workout/:workoutId/active';
   static const String workoutComplete = '/workout/:workoutId/complete';
   static const String quickLog = '/workout/:workoutId/quick-log';
+  static const String workoutBuilder = '/workout/builder';
+  static const String workoutBuilderEdit = '/workout/builder/:workoutId';
+  static const String workoutTemplates = '/workout/templates';
 
   // Exercise paths
   static const String exerciseLibrary = '/exercises';
@@ -84,6 +98,13 @@ class RoutePaths {
   static const String workoutHistory = '/profile/history';
   static const String historyDetail = '/profile/history/:logId';
   static const String achievements = '/achievements';
+  static const String measurements = '/progress/measurements';
+  static const String weightTracking = '/progress/weight';
+  static const String progressPhotos = '/progress/photos';
+
+  // Tools paths
+  static const String plateCalculator = '/tools/plates';
+  static const String oneRmCalculator = '/tools/1rm';
 
   /// Build workout detail path with ID.
   static String workoutDetailPath(String workoutId) => '/workout/$workoutId';
