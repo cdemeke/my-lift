@@ -58,5 +58,13 @@
 	<true/>
 	<key>GIDClientID</key>
 	<string>74460841126-c18m28qjepi9qq7ocgluags5ii0kv15c.apps.googleusercontent.com</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>MyLift uses speech recognition to let you talk to your AI fitness coach hands-free.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>MyLift needs microphone access to enable voice commands for your AI coach.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>MyLift needs photo library access to save and view your progress photos.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>MyLift uses your camera to take progress photos for tracking your fitness journey.</string>
 </dict>
 </plist>

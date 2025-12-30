@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -8,6 +9,7 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/router/route_names.dart';
 import '../../../data/services/ai_coach_service.dart';
 import '../../../data/services/settings_service.dart';
+import '../widgets/voice_input_widget.dart';
 
 /// AI Coach chat screen with Gemini integration.
 class CoachChatScreen extends ConsumerStatefulWidget {
@@ -23,6 +25,7 @@ class _CoachChatScreenState extends ConsumerState<CoachChatScreen>
   final _scrollController = ScrollController();
   bool _isTyping = false;
   bool _isInitialized = false;
+  bool _showVoiceOverlay = false;
   String? _apiKeyError;
 
   final List<Map<String, dynamic>> _messages = [];
@@ -120,10 +123,30 @@ class _CoachChatScreenState extends ConsumerState<CoachChatScreen>
     });
   }
 
+  void _handleVoiceInput(String text) {
+    if (text.isEmpty) return;
+
+    HapticFeedback.mediumImpact();
+    setState(() {
+      _showVoiceOverlay = false;
+      _messageController.text = text;
+    });
+
+    // Auto-send after voice input
+    _sendMessage();
+  }
+
+  void _showVoiceInput() {
+    HapticFeedback.mediumImpact();
+    setState(() => _showVoiceOverlay = true);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(
         title: Row(
           children: [
             Container(
@@ -316,11 +339,19 @@ class _CoachChatScreenState extends ConsumerState<CoachChatScreen>
               ),
               child: Row(
                 children: [
+                  // Voice input button
+                  VoiceInputButton(
+                    onResult: _handleVoiceInput,
+                    onListeningStarted: () {
+                      HapticFeedback.mediumImpact();
+                    },
+                  ),
+                  const SizedBox(width: AppDimensions.spacingSm),
                   Expanded(
                     child: TextField(
                       controller: _messageController,
                       decoration: InputDecoration(
-                        hintText: AppStrings.askCoach,
+                        hintText: 'Type or tap mic to speak...',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(
                             AppDimensions.radiusFull,
@@ -369,6 +400,14 @@ class _CoachChatScreenState extends ConsumerState<CoachChatScreen>
           ),
         ],
       ),
+    ),
+    // Voice input overlay
+    if (_showVoiceOverlay)
+      VoiceInputOverlay(
+        onResult: _handleVoiceInput,
+        onCancel: () => setState(() => _showVoiceOverlay = false),
+      ),
+      ],
     );
   }
 

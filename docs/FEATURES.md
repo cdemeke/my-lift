@@ -154,7 +154,24 @@ Smart weight tracking that cuts through daily fluctuations:
 
 ## AI Coach Features
 
-*(Features will be documented as implemented)*
+### Voice Input for AI Coach
+**Location:** Coach Chat → Microphone button
+
+Talk to your AI coach hands-free:
+- Tap the microphone button to start speaking
+- Real-time speech-to-text conversion
+- Animated visual feedback showing listening state
+- Sound level indicator responds to your voice
+- Auto-send when you finish speaking
+- Works even during workouts when hands are busy
+
+Features:
+- Pulse animation while listening
+- Full-screen overlay mode for focused voice input
+- Quick hint suggestions for common questions
+- Cancel anytime by tapping the X or outside
+
+**Why it's helpful:** When you're mid-workout with sweaty hands or holding weights, voice input lets you ask questions without needing to type.
 
 ---
 
